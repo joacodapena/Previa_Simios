@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Sin Filtro - Juego</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#111;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+button{
+    padding:10px 20px;
+    margin:5px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+.card{
+    background:#222;
+    padding:30px;
+    margin:20px auto;
+    width:80%;
+    border-radius:12px;
+    font-size:20px;
+}
+input,select{
+    padding:8px;
+    margin:5px;
+    border-radius: 8px;
+}
+.small{
+    font-size:14px;
+    opacity:0.7;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔥LA PREVIA DE LOS SIMIOS🔥</h1>
+
+<select id="categoryFilter">
+<option value="all">Todas</option>
+<option>Toma</option>
+<option>Pregunta</option>
+<option>Reto</option>
+<option>Verdad</option>
+<option>Evento</option>
+<option>Yo Nunca</option>
+</select>
+
+<br>
+<button onclick="drawCard()">Sacar Carta</button>
+
+<div id="card" class="card">Listos para el caos 😈</div>
+
+<hr>
+
+<h3>Agregar / Editar Cartas</h3>
+
+<select id="newCategory">
+<option>Toma</option>
+<option>Pregunta</option>
+<option>Reto</option>
+<option>Verdad</option>
+<option>Evento</option>
+<option>Yo Nunca</option>
+</select>
+
+<input id="newText" placeholder="Nueva carta">
+<button onclick="addCard()">Agregar</button>
+
+<label style="display:block;margin:10px 0;">
+    <input type="checkbox" id="toggleList" onchange="toggleListVisibility()"> Ver cartas guardadas
+</label>
+<div id="list" style="display:none;"></div>
+
+
+<script>
+
+document.getElementById("toggleList").addEventListener("change", toggleListVisibility);
+
+function toggleListVisibility(){
+    const show = document.getElementById("toggleList").checked;
+    document.getElementById("list").style.display = show ? "block" : "none";
+}
+
+let defaultCards = [
+{cat:"Toma",text:"Toma el mas gato"},
+{cat:"Toma",text:"Toma el mas chamuyero"},
+{cat:"Toma",text:"Toma el que mas vuelve con su ex"},
+{cat:"Toma",text:"Toma el mas cornudo"},
+{cat:"Toma",text:"Cagaste, fondo blanco pibe"},
+{cat:"Toma",text:"Toma tantos tragos como minas que te chuponeaste este año"},
+{cat:"Toma",text:"Toma tantos tragos como minas que te cogiste este año"},
+{cat:"Toma",text:"Toma el que tiene mas ego"},
+{cat:"Toma",text:"Toma el mas infiel"},
+{cat:"Toma",text:"Toma el mas activo sexualmente"},
+{cat:"Toma",text:"Toma 5 tragos"},
+{cat:"Toma",text:"Toma un shot, la banda decide de que"},
+{cat:"Toma",text:"Toma el que mas chuponea"},
+{cat:"Toma",text:"Toma el mas virgen"},
+{cat:"Toma",text:"Toma el mas bichero"},
+{cat:"Toma",text:"Toma el proximo en quedar pelado"},
+{cat:"Toma",text:"Toma el que la tiene mas grande"},
+{cat:"Toma",text:"Toma el que la tiene mas chica"},
+{cat:"Toma",text:"Toma el mas falso de todos"},
+{cat:"Toma",text:"Toma el que peor maneja"},
+{cat:"Toma",text:"Toma el que mas ghostea"},
+{cat:"Toma",text:"Reparti 5 tragos"},
+{cat:"Reto",text:"Mandale un emoji a algun chong@ o 3 shots"},
+{cat:"Reto",text:"Chamuyate a un objeto que este en la sala o 2 tragos"},
+{cat:"Reto",text:"Habla como rugbier durante toda una ronda o fondo blanco man"},
+{cat:"Reto",text:"Hace el gusanito o 3 tragos"},
+{cat:"Reto",text:"Mandale un mensaje corto a tu 3 arroba en ig o fondo blanco"},
+{cat:"Reto",text:"Videollamada a tus padres o 2 shots"},
+{cat:"Evento",text:"Todos toman 1 trago, ya fue"},
+{cat:"Evento",text:"FONDO BLANCO TODOS LOS PIBES"},
+{cat:"Evento",text:"TORRES GEMELAS"},
+{cat:"Evento",text:"El ultimo en reirse toma"},
+{cat:"Evento",text:"El próximo que diga 'Hermano' toma 2 tragos"},
+{cat:"Evento",text:"Confesion rapida, se vota si es real o falsa, los que le erran toman 3 tragos"},
+{cat:"Evento",text:"Impostor express, decile una palabra a cada uno"},
+{cat:"Evento",text:"Imita como seria tu brindis en el casamiento de alguno de los pibes"},
+{cat:"Evento",text:"Selfie grupal"},
+{cat:"Yo Nunca",text:"Yo nunca volvi con mi ex"},
+{cat:"Yo Nunca",text:"Yo nunca hice un trio"},
+{cat:"Yo Nunca",text:"Yo nunca cogi con de mas una en una semana"},
+{cat:"Yo Nunca",text:"Yo nunca fui o me fueron infiel"},
+{cat:"Yo Nunca",text:"Yo nunca stalkee a mi ex despues de cortar"},
+{cat:"Toma",text:"Toma el mas violin"},
+{cat:"Toma",text:"Toma el que estuvo con la mas vieja"},
+{cat:"Evento",text:"Todos tienen que decir alguna compartida entre los pibes, el que pierde toma 3 tragos"},
+{cat:"Evento",text:"Storytime breve de tu mejor anecdota sexual"},
+{cat:"Toma",text:"Toma el mas falopero"},
+{cat:"Toma",text:"Toma el mas pajero de todos"},
+{cat:"Yo Nunca",text:"Yo nunca pague only fans"},
+{cat:"Yo Nunca",text:"Yo nunca me hice mas de 5 pajas en un dia"},
+{cat:"Yo Nunca",text:"Yo nunca mire porno gay"},
+{cat:"Evento",text:"Viene un barco cargado de..."},
+{cat:"Evento",text:"Todos miran hacia abajo, a la cuenta de 3 levantan la mirada y los que se miran toman 3 tragos"},
+{cat:"Toma",text:"Toma el mas morboso o bizarro sexualmente"},
+{cat:"Toma",text:"Toma el que le entra o le guste un@ del grupo"},
+{cat:"Reto",text:"10 lagartijas o 1 shot"},
+{cat:"Yo Nunca",text:"Yo nunca utilice juguetes en un acto sexual"},
+{cat:"Yo Nunca",text:"Yo nunca utilice comida en un acto sexual"},
+{cat:"Reto",text:"Tenes que intercambiar identidad con el de tu izquierda"},
+{cat:"Evento",text:"Al proximo que le llegue una notificacion, 3 tragos"},
+{cat:"Reto",text:"Conta un chiste, si no se rie nadie fondo blanco, y el que se rie toma 2 tragos"},
+{cat:"Evento",text:"Ronda de verduras, el que repite o se equivoca pierde"},
+{cat:"Evento",text:"Ronda de cachetazos, no importa donde"},
+{cat:"Reto",text:"El de tu derecha tiene que sacarte una prenda"},
+{cat:"Yo Nunca",text:"Yo nunca tuve sexo anal"},
+{cat:"Evento",text:"SOS LA PUTA, TOMAS SIEMPRE"},
+{cat:"Reto",text:"Mensaje a tu ex o fondo blanco"},
+{cat:"Reto",text:"Beso al que le tengas mas ganas o fondo blanco"},
+{cat:"Reto",text:"Sin repetir, nombrar a compartidas entre los pibes"},
+{cat:"Yo Nunca",text:"Yo nunca estuve con la ex de un amigo"},
+{cat:"Yo Nunca",text:"Yo nunca estuve con amigos de mi ex"},
+{cat:"Toma",text:"Toman los que estan vestidos de negro"},
+{cat:"Toma",text:"Toman los que estan vestidos de blanco"},
+{cat:"Pregunta",text:"Quien pensas que la tiene mas grande?"},
+{cat:"Pregunta",text:"Quien te parece el mas lind@?"},
+{cat:"Reto",text:"Canta una canción de HSM o toma 5 tragos"},
+{cat:"Evento",text:"Karaoke con el de tu derecha, los demas eligen la cancion"},
+{cat:"Toma",text:"Tomas del vaso de la persona de en frente"},
+{cat:"Reto",text:"El resto elige a alguien de la ronda y vos l@ tenes que puntuar"},
+{cat:"Reto",text:"Elegis a dos personas y piquiño"},
+{cat:"Toma",text:"Toma el permatrago..."},
+{cat:"Toma",text:"Toma el padalustro..."},
+{cat:"Toma",text:"Toma el mas adicto a la pornografia"},
+{cat:"Evento",text:"El resto elige a una persona y se van al baño 2 minutos o TORRES GEMELAS"},
+{cat:"Toma",text:"Toma el que estuvo con una MILF"},
+{cat:"Toma",text:"Toma el que tenga trujo..."},
+{cat:"Toma",text:"Toma el que tenga cupo..."},
+{cat:"Yo Nunca",text:"Yo nunca combine drogas en una noche"},
+{cat:"Yo Nunca",text:"Yo nunca cogi con mas de una en una noche"},
+{cat:"Yo Nunca",text:"Yo nunca cogi en la cama de un amigo"},
+{cat:"Yo Nunca",text:"Yo nunca fantaseé con algun familiar de un amigo"},
+{cat:"Reto",text:"Deci la tabla del 7 y si te equivocas tomas 3 tragos"},
+{cat:"Toma",text:"Toman los que no estan depilados"},
+{cat:"Toma",text:"Toman los casados"},
+{cat:"Toma",text:"Toma el mas pollera del grupo"},
+{cat:"Toma",text:"Toma el mas vago"},
+{cat:"Toma",text:"Toma el mas rata"},
+{cat:"Toma",text:"Toma el que tiene mas levante"},
+{cat:"Toma",text:"Toma el que estuvo con mas personas en una noche"},
+{cat:"Evento",text:"Habla como alonso durante 2 rondas"},
+{cat:"Evento",text:"Maneras de decir al miembro masculino, el que pierde toma 3 tragos"},
+{cat:"Evento",text:"Maneras de decir al miembro femenino, el que pierde toma 3 tragos"},
+{cat:"Reto",text:"Subi una historia beboteando al posta sino shot"},
+{cat:"Yo Nunca",text:"Yo nunca hice o me hicieron un beso negro"},
+{cat:"Yo Nunca",text:"Yo nunca hice el beso del payaso"},
+{cat:"Toma",text:"Toma el que debuto último"}
+
+];
+
+let cards = JSON.parse(localStorage.getItem("cards")) || defaultCards;
+
+function save(){
+localStorage.setItem("cards",JSON.stringify(cards));
+renderList();
+toggleListVisibility();
+}
+
+function drawCard(){
+let filter=document.getElementById("categoryFilter").value;
+let pool = filter==="all" ? cards : cards.filter(c=>c.cat===filter);
+if(pool.length===0)return;
+
+let card = pool[Math.floor(Math.random()*pool.length)];
+document.getElementById("card").innerHTML=
+`<b>${card.cat}</b><br>${card.text}`;
+}
+
+function addCard(){
+let cat=document.getElementById("newCategory").value;
+let text=document.getElementById("newText").value;
+if(!text)return;
+
+cards.push({cat,text});
+document.getElementById("newText").value="";
+save();
+}
+
+function deleteCard(i){
+cards.splice(i,1);
+save();
+}
+
+function renderList(){
+let html="<h4>Cartas guardadas</h4>";
+cards.forEach((c,i)=>{
+html+=`
+<div class="small">
+<b>${c.cat}</b> — ${c.text}
+<button onclick="deleteCard(${i})">X</button>
+</div>`;
+});
+document.getElementById("list").innerHTML=html;
+}
+
+renderList();
+
+</script>
+
+</body>
+</html>
